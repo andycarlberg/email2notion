@@ -1,3 +1,4 @@
+import imaplib
 from flask import Blueprint, jsonify
 from flask_restful import Api, reqparse, Resource
 
@@ -14,16 +15,7 @@ parser.add_argument('user')
 parser.add_argument('passw')
 
 
-class MailServer(Resource):
-    def get(self, mailserver_id):
-        return {'name': 'My First Mailserver'}
-
-    def put(self, mailserver_id):
-        args = parser.parse_args()
-        return {'name': args['name']}
-
-
-class MailServerList(Resource):
+class MailserverList(Resource):
     def get(self):
         mailservers = models.Mailserver.query.all()
         return jsonify(mailservers)
@@ -37,5 +29,42 @@ class MailServerList(Resource):
         return jsonify(new_mailserver)
 
 
-api.add_resource(MailServerList, '/mailservers')
-api.add_resource(MailServer, '/mailservers/<mailserver_id>')
+class Mailserver(Resource):
+    def get(self, mailserver_id):
+        mailserver = models.Mailserver.query.get(mailserver_id)
+        return jsonify(mailserver)
+
+    def put(self, mailserver_id):
+        args = parser.parse_args()
+
+        mailserver = models.Mailserver.query.get(mailserver_id)
+        mailserver.name = args['name']
+        mailserver.host = args['host']
+        mailserver.port = args['port']
+        mailserver.user = args['user']
+        mailserver.passw = args['passw']
+        models.db.session.commit()
+
+        return jsonify(mailserver)
+
+
+class MailserverMailboxList(Resource):
+    def get(self, mailserver_id):
+        mailserver = models.Mailserver.query.get(mailserver_id)
+
+        imap = imaplib.IMAP4_SSL(mailserver.host, mailserver.port)
+        imap.login(mailserver.user, mailserver.passw)
+
+        imap_mailboxes = imap.list()[1]
+        mailboxes = []
+        for imap_mailbox in imap_mailboxes:
+            mailbox_name = imap_mailbox.decode().split(' "/" ')[1].strip('\"')
+            mailboxes.append(mailbox_name)
+
+        return mailboxes
+
+
+api.add_resource(MailserverList, '/mailservers')
+api.add_resource(Mailserver, '/mailservers/<mailserver_id>')
+api.add_resource(MailserverMailboxList,
+                 '/mailservers/<mailserver_id>/mailboxes')
