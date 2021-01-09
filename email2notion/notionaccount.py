@@ -1,6 +1,9 @@
 import imaplib
 from flask import Blueprint, jsonify
 from flask_restful import Api, reqparse, Resource
+from notion.client import NotionClient
+from notion.block.basic import Block
+from notion.block.collection.media import CollectionViewBlock
 
 from . import models
 
@@ -42,5 +45,23 @@ class NotionAccount(Resource):
         return jsonify(notionaccount)
 
 
+class NotionAccountPageList(Resource):
+    def get(self, notionaccount_id):
+        notionaccount = models.NotionAccount.query.get(notionaccount_id)
+        notion_client = NotionClient(notionaccount.token)
+
+        notion_top_level_pages = notion_client.get_top_level_pages()
+        top_level_pages = {}
+        for page in notion_top_level_pages:
+            if issubclass(type(page), CollectionViewBlock):
+                top_level_pages[page.id] = page.collection.name
+            elif issubclass(type(page), Block):
+                top_level_pages[page.id] = page.title
+
+        return top_level_pages
+
+
 api.add_resource(NotionAccountList, '/notionaccounts')
 api.add_resource(NotionAccount, '/notionaccounts/<notionaccount_id>')
+api.add_resource(NotionAccountPageList,
+                 '/notionaccounts/<notionaccount_id>/pages')

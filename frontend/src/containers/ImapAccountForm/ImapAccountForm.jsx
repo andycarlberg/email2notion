@@ -3,31 +3,18 @@ import { useState, useEffect } from "react";
 import FormElement from "../../components/FormElement/FormElement";
 import Button from "../../components/Button/Button";
 
-const ImapAccountForm = () => {
-  // ID should only exist if the data was pulled from the API
-  // As such, this can be used as a flag to know if an asset
-  // should be created or update
-  const [imapId, setImapId] = useState("");
+const ImapAccountForm = ({ mailserver, onApply }) => {
   const [imapHost, setImapHost] = useState("");
   const [imapPort, setImapPort] = useState("");
   const [imapUser, setImapUser] = useState("");
   const [imapPassw, setImapPassw] = useState("");
 
   useEffect(() => {
-    fetch("/mailservers").then((imapAccountResult) => {
-      if (imapAccountResult) {
-        imapAccountResult.json().then((imapAccountData) => {
-          if (imapAccountData.length > 0) {
-            setImapId(imapAccountData[0].id);
-            setImapHost(imapAccountData[0].host);
-            setImapPort(imapAccountData[0].port);
-            setImapUser(imapAccountData[0].user);
-            setImapPassw(imapAccountData[0].passw);
-          }
-        });
-      }
-    });
-  }, []);
+    setImapHost(mailserver.host);
+    setImapPort(mailserver.port);
+    setImapUser(mailserver.user);
+    setImapPassw(mailserver.passw);
+  }, [mailserver]);
 
   const fieldChangeHandler = (event) => {
     switch (event.target.name) {
@@ -54,43 +41,13 @@ const ImapAccountForm = () => {
   };
 
   const applyHandler = () => {
-    const params = new URLSearchParams({
-      name: "default",
+    onApply({
+      ...mailserver,
       host: imapHost,
       port: imapPort,
       user: imapUser,
       passw: imapPassw,
     });
-
-    if (imapId) {
-      // PUT
-      fetch(`/mailservers/${imapId}`, {
-        method: "PUT",
-        body: params,
-      }).then((updateResponse) => {
-        updateResponse.json().then((updateResponseData) => {
-          setImapId(updateResponseData.id);
-          setImapHost(updateResponseData.host);
-          setImapPort(updateResponseData.port);
-          setImapUser(updateResponseData.user);
-          setImapPassw(updateResponseData.passw);
-        });
-      });
-    } else {
-      // POST
-      fetch("/mailservers", {
-        method: "POST",
-        body: params,
-      }).then((updateResponse) => {
-        updateResponse.json().then((updateResponseData) => {
-          setImapId(updateResponseData.id);
-          setImapHost(updateResponseData.host);
-          setImapPort(updateResponseData.port);
-          setImapUser(updateResponseData.user);
-          setImapPassw(updateResponseData.passw);
-        });
-      });
-    }
   };
 
   return (
