@@ -31,6 +31,9 @@ def create_app(test_config=None):
     from . import notionaccount
     app.register_blueprint(notionaccount.bp)
 
+    from . import foldermapping
+    app.register_blueprint(foldermapping.bp)
+
     @app.route('/')
     def index():
         return app.render_template('index.html')

@@ -3,9 +3,16 @@ import { useState, useEffect } from "react";
 import FormElement from "../../components/FormElement/FormElement";
 import Button from "../../components/Button/Button";
 
-const FolderMappingForm = ({ mailserverId, notionAccountId }) => {
+const FolderMappingForm = ({
+  mailserverId,
+  notionAccountId,
+  folderMapping,
+  onApply,
+}) => {
   const [mailboxList, setMailboxList] = useState([]);
   const [pagesList, setPagesList] = useState({});
+  const [srcMailbox, setSrcMailbox] = useState("");
+  const [destPage, setDestPage] = useState("");
 
   useEffect(() => {
     if (mailserverId) {
@@ -27,7 +34,28 @@ const FolderMappingForm = ({ mailserverId, notionAccountId }) => {
         }
       );
     }
-  }, [mailserverId, notionAccountId]);
+
+    setSrcMailbox(folderMapping.src_mailbox);
+    setDestPage(folderMapping.dest_page);
+  }, [mailserverId, notionAccountId, folderMapping]);
+
+  const srcMailboxChangeHandler = (event) => {
+    setSrcMailbox(event.target.value);
+  };
+
+  const destPageChangeHandler = (event) => {
+    setDestPage(event.target.value);
+  };
+
+  const applyHandler = () => {
+    onApply({
+      ...folderMapping,
+      src_mailserver: mailserverId,
+      src_mailbox: srcMailbox,
+      dest_notionaccount: notionAccountId,
+      dest_page: destPage,
+    });
+  };
 
   return (
     <div className="flex flex-col space-y-4">
@@ -38,9 +66,15 @@ const FolderMappingForm = ({ mailserverId, notionAccountId }) => {
             label="Source"
             name="src-mailbox"
             id="src-mailbox"
+            onChange={srcMailboxChangeHandler}
           >
+            <option key="default" />
             {mailboxList.map((mailbox) => (
-              <option key={mailbox} value={mailbox}>
+              <option
+                key={mailbox}
+                value={mailbox}
+                selected={mailbox === srcMailbox}
+              >
                 {mailbox}
               </option>
             ))}
@@ -55,9 +89,15 @@ const FolderMappingForm = ({ mailserverId, notionAccountId }) => {
             label="Destination"
             name="dest-page"
             id="dest-page"
+            onChange={destPageChangeHandler}
           >
+            <option key="default" />
             {Object.keys(pagesList).map((pageId) => (
-              <option key={pageId} value={pageId}>
+              <option
+                key={pageId}
+                value={pageId}
+                selected={pageId === destPage}
+              >
                 {pagesList[pageId]}
               </option>
             ))}
@@ -65,7 +105,9 @@ const FolderMappingForm = ({ mailserverId, notionAccountId }) => {
         </div>
       </div>
       <div className="flex flex-row-reverse">
-        <Button type="submit">Apply</Button>
+        <Button type="submit" onClick={applyHandler}>
+          Apply
+        </Button>
       </div>
     </div>
   );

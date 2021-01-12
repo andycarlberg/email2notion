@@ -20,6 +20,14 @@ function App() {
     passw: "",
   });
 
+  const [folderMappingData, setFolderMappingData] = useState({
+    id: null,
+    src_mailserver: null,
+    src_mailbox: "",
+    dest_notionaccount: null,
+    dest_page: "",
+  });
+
   useEffect(() => {
     fetch("/notionaccounts").then((notionAccountResult) => {
       if (notionAccountResult) {
@@ -36,6 +44,16 @@ function App() {
         imapAccountResult.json().then((imapAccountData) => {
           if (imapAccountData.length > 0) {
             setMailserverData(imapAccountData[0]);
+          }
+        });
+      }
+    });
+
+    fetch("/foldermappings").then((folderMappingResult) => {
+      if (folderMappingResult) {
+        folderMappingResult.json().then((folderMappingData) => {
+          if (folderMappingData.length > 0) {
+            setFolderMappingData(folderMappingData[0]);
           }
         });
       }
@@ -109,6 +127,40 @@ function App() {
     }
   };
 
+  const folderMappingApplyHandler = (updatedFolderMappingData) => {
+    const params = new URLSearchParams({
+      src_mailserver: updatedFolderMappingData.src_mailserver,
+      src_mailbox: updatedFolderMappingData.src_mailbox,
+      dest_notionaccount: updatedFolderMappingData.dest_notionaccount,
+      dest_page: updatedFolderMappingData.dest_page,
+    });
+
+    // ID should only exist if the data was pulled from the API
+    // As such, this can be used as a flag to know if an asset
+    // should be created or update
+    if (updatedFolderMappingData.id) {
+      // PUT
+      fetch(`/foldermappings/${updatedFolderMappingData.id}`, {
+        method: "PUT",
+        body: params,
+      }).then((updateResponse) => {
+        updateResponse.json().then((updateResponseData) => {
+          setFolderMappingData(updateResponseData);
+        });
+      });
+    } else {
+      // POST
+      fetch("/foldermappings", {
+        method: "POST",
+        body: params,
+      }).then((updateResponse) => {
+        updateResponse.json().then((updateResponseData) => {
+          setFolderMappingData(updateResponseData);
+        });
+      });
+    }
+  };
+
   return (
     <div className="App h-screen bg-gray-100">
       <header className="p-5 bg-blue-500 text-5xl font-bold text-white border border-purple-600 shadow-lg">
@@ -133,6 +185,8 @@ function App() {
           <FolderMappingForm
             mailserverId={mailserverData.id}
             notionAccountId={notionAccountData.id}
+            folderMapping={folderMappingData}
+            onApply={folderMappingApplyHandler}
           />
         </Card>
       </div>
