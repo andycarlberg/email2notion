@@ -35,4 +35,11 @@ class Configuration(Resource):
         return jsonify(configuration)
 
 
+class Process(Resource):
+    def get(self):
+        print("Checking for new pages")
+        return jsonify({"message": "Success!"})
+
+
 api.add_resource(Configuration, '/configuration')
+api.add_resource(Process, '/process')
