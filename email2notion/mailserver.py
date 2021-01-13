@@ -61,6 +61,8 @@ class MailserverMailboxList(Resource):
             mailbox_name = imap_mailbox.decode().split(' "/" ')[1].strip('\"')
             mailboxes.append(mailbox_name)
 
+        imap.logout()
+
         return mailboxes
 
 

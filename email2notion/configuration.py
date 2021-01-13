@@ -37,7 +37,14 @@ class Configuration(Resource):
 
 class Process(Resource):
     def get(self):
-        print("Checking for new pages")
+        mailserver = models.Mailserver.query.first()
+        notionaccount = models.NotionAccount.query.first()
+        foldermapping = models.FolderMapping.query.first()
+
+        from . import email2notion
+        email2notion.import_pages(mailserver, foldermapping.src_mailbox,
+                                  notionaccount, foldermapping.dest_page)
+
         return jsonify({"message": "Success!"})
 
 

@@ -1,4 +1,3 @@
-import imaplib
 from flask import Blueprint, jsonify
 from flask_restful import Api, reqparse, Resource
 from notion.client import NotionClient
