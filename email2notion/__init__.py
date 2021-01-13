@@ -25,6 +25,9 @@ def create_app(test_config=None):
     from . import models
     models.init_app(app)
 
+    from . import configuration
+    app.register_blueprint(configuration.bp)
+
     from . import mailserver
     app.register_blueprint(mailserver.bp)
 

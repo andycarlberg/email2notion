@@ -105,9 +105,7 @@ const FolderMappingForm = ({
         </div>
       </div>
       <div className="flex flex-row-reverse">
-        <Button type="submit" onClick={applyHandler}>
-          Apply
-        </Button>
+        <Button onClick={applyHandler}>Apply</Button>
       </div>
     </div>
   );

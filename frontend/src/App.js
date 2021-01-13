@@ -5,11 +5,11 @@ import Card from "./components/Card/Card";
 import ImapAccountForm from "./containers/ImapAccountForm/ImapAccountForm";
 import NotionAccountForm from "./containers/NotionAccountForm/NotionAccountForm";
 import FolderMappingForm from "./containers/FolderMappingForm/FolderMappingForm";
+import ConfigurationForm from "./containers/ConfigurationForm/ConfigurationForm";
 
 function App() {
-  const [notionAccountData, setNotionAccountData] = useState({
-    id: null,
-    token: "",
+  const [configData, setConfigData] = useState({
+    check_freq: "",
   });
 
   const [mailserverData, setMailserverData] = useState({
@@ -18,6 +18,11 @@ function App() {
     port: "",
     user: "",
     passw: "",
+  });
+
+  const [notionAccountData, setNotionAccountData] = useState({
+    id: null,
+    token: "",
   });
 
   const [folderMappingData, setFolderMappingData] = useState({
@@ -29,12 +34,10 @@ function App() {
   });
 
   useEffect(() => {
-    fetch("/notionaccounts").then((notionAccountResult) => {
-      if (notionAccountResult) {
-        notionAccountResult.json().then((notionAccountData) => {
-          if (notionAccountData.length > 0) {
-            setNotionAccountData(notionAccountData[0]);
-          }
+    fetch("/configuration").then((configResult) => {
+      if (configResult) {
+        configResult.json().then((configData) => {
+          setConfigData(configData);
         });
       }
     });
@@ -44,6 +47,16 @@ function App() {
         imapAccountResult.json().then((imapAccountData) => {
           if (imapAccountData.length > 0) {
             setMailserverData(imapAccountData[0]);
+          }
+        });
+      }
+    });
+
+    fetch("/notionaccounts").then((notionAccountResult) => {
+      if (notionAccountResult) {
+        notionAccountResult.json().then((notionAccountData) => {
+          if (notionAccountData.length > 0) {
+            setNotionAccountData(notionAccountData[0]);
           }
         });
       }
@@ -59,6 +72,20 @@ function App() {
       }
     });
   }, []);
+
+  const configurationApplyHandler = (updatedConfigData) => {
+    const params = new URLSearchParams({
+      check_freq: updatedConfigData.check_freq,
+    });
+
+    fetch("/configuration", { method: "POST", body: params }).then(
+      (updateResponse) => {
+        updateResponse.json().then((updateResponseData) => {
+          setConfigData(updateResponseData);
+        });
+      }
+    );
+  };
 
   const mailserverApplyHandler = (updatedMailserverData) => {
     const params = new URLSearchParams({
@@ -168,6 +195,12 @@ function App() {
       </header>
       <div className="flex flex-col p-10 space-y-10">
         <div className="flex flex-row flex-wrap justify-between space-x-10">
+          <Card title="Configuration">
+            <ConfigurationForm
+              config={configData}
+              onApply={configurationApplyHandler}
+            />
+          </Card>
           <Card title="IMAP Account Settings">
             <ImapAccountForm
               mailserver={mailserverData}

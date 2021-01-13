@@ -12,6 +12,17 @@ def init_app(app):
 
 
 @dataclass
+class Configuration(db.Model):
+    check_freq: str
+
+    id = db.Column(db.Integer, primary_key=True)
+    check_freq = db.Column(db.Text, nullable=False)
+
+    def __repr__(self):
+        return '<Configuration %r>' % self.id
+
+
+@dataclass
 class Mailserver(db.Model):
     id: int
     name: str
@@ -68,4 +79,4 @@ class FolderMapping(db.Model):
     dest_page = db.Column(db.Text, nullable=False)
 
     def __repr__(self):
-        return '<FolderMapping %r>' % self.name
+        return '<FolderMapping %r>' % self.id
