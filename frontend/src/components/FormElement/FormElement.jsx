@@ -35,7 +35,7 @@ const FormElement = ({ label, name, id, type, value, onChange, children }) => {
 
   return (
     <div className="flex flex-col">
-      <label className="mb-2 font-bold text-gray-500" for={name}>
+      <label className="mb-2 font-bold text-gray-500" htmlFor={name}>
         {label}
       </label>
       {renderElementByType(type)}

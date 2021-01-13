@@ -26,6 +26,18 @@ const ConfigurationForm = ({ config, onApply }) => {
     });
   };
 
+  const checkNowHandler = () => {
+    fetch("/process").then((processResponse) => {
+      if (processResponse) {
+        processResponse.json().then((processResponseData) => {
+          console.log(
+            `email2notion Process Result: ${processResponseData.message}`
+          );
+        });
+      }
+    });
+  };
+
   return (
     <div className="flex flex-col space-y-4">
       <FormElement
@@ -44,7 +56,9 @@ const ConfigurationForm = ({ config, onApply }) => {
       </FormElement>
       <div className="flex flex-row-reverse space-x-reverse space-x-4">
         <Button onClick={applyHandler}>Apply</Button>
-        <Button variant="text">Check Now</Button>
+        <Button variant="text" onClick={checkNowHandler}>
+          Check Now
+        </Button>
       </div>
     </div>
   );
