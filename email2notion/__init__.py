@@ -2,6 +2,8 @@ import os
 
 from flask import Flask, render_template
 
+from . import scheduler
+
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True,
@@ -36,6 +38,8 @@ def create_app(test_config=None):
 
     from . import foldermapping
     app.register_blueprint(foldermapping.bp)
+
+    scheduler.start()
 
     @app.route('/')
     def index():
