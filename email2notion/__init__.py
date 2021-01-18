@@ -8,7 +8,7 @@ def create_app(test_config=None):
                 static_folder="../frontend/build/static", template_folder='../frontend/build')
     app.config.from_mapping(
         SECRET_KEY='dev',
-        SQLALCHEMY_DATABASE_URI='sqlite:////tmp/email2notion.db',
+        SQLALCHEMY_DATABASE_URI='sqlite:////config/email2notion.db',
         SQLALCHEMY_TRACK_MODIFICATIONS=False
     )
 
