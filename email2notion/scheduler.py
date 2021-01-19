@@ -2,8 +2,8 @@ from apscheduler.schedulers.background import BackgroundScheduler
 
 scheduler = BackgroundScheduler({
     'apscheduler.jobstores.default': {
-        'type': 'sqlalchemy'
-        'url': 'sqlite:////config/jobs.sqlite'
+        'type': 'sqlalchemy',
+        'url': 'sqlite:////config/email2notion_jobs.db'
     },
     'apscheduler.execurots.default': {
         'class': 'apscheduler.execurots.pool:ThreadPoolExecutor',

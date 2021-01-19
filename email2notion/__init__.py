@@ -39,7 +39,7 @@ def create_app(test_config=None):
     from . import foldermapping
     app.register_blueprint(foldermapping.bp)
 
-    scheduler.start()
+    scheduler.scheduler.start()
 
     @app.route('/')
     def index():
