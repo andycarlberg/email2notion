@@ -51,7 +51,7 @@ def import_pages(mailserver, mailbox, notionaccount, parent_block_id):
                         # can figure out a way to make this more flexible
                         # - andycarlberg 1/17/2021
                         text_bytes = base64.b64decode(attachment['payload'])
-                        text_content = text_bytes.decode('ascii')
+                        text_content = text_bytes.decode('utf-8')
 
                         text_block = new_page.children.add_new(TextBlock)
                         text_block.title = text_content
