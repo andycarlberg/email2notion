@@ -4,12 +4,11 @@ import email
 import mailparser
 from imapclient import IMAPClient
 from notion.client import NotionClient
-from notion.block.basic import PageBlock
-from notion.block.basic import TextBlock
-from notion.block.upload import PdfBlock
-from notion.block.upload import ImageBlock
-from notion.block.collection.media import CollectionViewBlock
-from notion.block.collection.media import CollectionViewPageBlock
+from notion.block import PageBlock
+from notion.block import TextBlock
+from notion.block import PDFBlock
+from notion.block import ImageBlock
+from notion.collection import CollectionView
 
 
 def import_pages(mailserver, mailbox, notionaccount, parent_block_id):
@@ -25,7 +24,7 @@ def import_pages(mailserver, mailbox, notionaccount, parent_block_id):
             email = mailparser.parse_from_bytes(message_data[b'RFC822'])
 
             new_page = None
-            if issubclass(type(notion_parent_block), CollectionViewBlock):
+            if issubclass(type(notion_parent_block), CollectionView):
                 # Don't update views here, it seems to cause a problem with some views
                 # and doesn't seem to be necessary for our objective.
                 # TODO: Figure out what the actual problem is... - andycarlberg 1/17/2021
